@@ -1,0 +1,140 @@
+using System;
+using System.Windows.Forms;
+
+namespace Calculator
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private string s = "";
+
+        private void AddOperator(string op)
+        {
+            if (string.IsNullOrEmpty(s))
+                return;
+
+            char last = s[s.Length - 1];
+
+            if (last == '-' || last == '*' || last == '÷' || last == '+')
+            {
+                lblResult.Text = lblResult.Text.Substring(0, lblResult.Text.Length - 1) + op;
+                s = s.Substring(0, s.Length - 1) + op;
+            }
+            else
+                s += op;
+
+            lblResult.Text = s;
+        }
+
+        private void AddDigit(string digit)
+        {
+            if (s == "0")
+                s = "";
+            s += digit;
+            lblResult.Text = s;
+        }
+
+        private bool EndsWithOperator()
+        {
+            char last = s[s.Length - 1];
+            return last == '-' || last == '*' || last == '+' || last == '÷';
+        }
+
+        private bool HasOperator()
+        {
+            return s.Contains("+") || s.Contains("-") || s.Contains("*") || s.Contains("÷");
+        }
+
+        private float Add(float num1, float num2)
+        {
+            return num1 + num2;
+        }
+
+        private float Sub(float num1, float num2)
+        {
+            return num1 - num2;
+        }
+
+        private float Multiply(float num1, float num2)
+        {
+            return num1 * num2;
+        }
+
+        private float Divide(float num1, float num2)
+        {
+            return num1 / num2;
+        }
+
+        private void NumbersBtn_Click(object sender, EventArgs e)
+        {
+            Button numbers = sender as Button;
+            AddDigit(numbers.Text);
+        }
+
+        private void OperatorsBtn_Click(object sender, EventArgs e)
+        {
+            Button operators = (Button)sender;
+            AddOperator(operators.Text);
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            s = "";
+            lblResult.Text = "";
+        }
+
+        private void btnEquals_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(s) || EndsWithOperator() || !HasOperator())
+                return;
+
+            float num1, num2;
+
+            if (s.Contains("+"))
+            {
+                string[] parts = s.Split('+');
+                num1 = float.Parse(parts[0]);
+                num2 = float.Parse(parts[1]);
+                lblResult.Text = Add(num1, num2).ToString();
+                s = lblResult.Text;
+            }
+
+            else if (s.Contains("-"))
+            {
+                string[] parts = s.Split('-');
+                num1 = float.Parse(parts[0]);
+                num2 = float.Parse(parts[1]);
+                lblResult.Text = Sub(num1, num2).ToString();
+                s = lblResult.Text;
+            }
+
+            else if (s.Contains("*"))
+            {
+                string[] parts = s.Split('*');
+                num1 = float.Parse(parts[0]);
+                num2 = float.Parse(parts[1]);
+                lblResult.Text = Multiply(num1, num2).ToString();
+                s = lblResult.Text;
+            }
+
+            else
+            {
+                string[] parts = s.Split('÷');
+                num1 = float.Parse(parts[0]);
+                num2 = float.Parse(parts[1]);
+                if (num2 == 0)
+                {
+                    lblResult.Text = "Error";
+                    s = "";
+                    return;
+                }
+                lblResult.Text = Divide(num1, num2).ToString();
+                s = lblResult.Text;
+            }
+        }
+    }
+}
